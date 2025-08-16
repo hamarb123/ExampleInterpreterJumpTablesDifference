@@ -59,6 +59,7 @@ uint64_t run_validated(unsigned char *instructions, uint64_t* evaluationStack, u
 		&&Instr_PopMulti_Impl - &&Offset,
 		&&Instr_PushZeroConstantMulti_Impl - &&Offset,
 	};
+	Offset:
 	goto *(&&Offset + ImplArray[*instructions]);
 	Instr_Add_Impl:
 	{
@@ -482,5 +483,4 @@ uint64_t run_validated(unsigned char *instructions, uint64_t* evaluationStack, u
 		instructions += 2;
 		goto *(&&Offset + ImplArray[*instructions]);
 	}
-	Offset:
 }
