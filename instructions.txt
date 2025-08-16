@@ -1,0 +1,115 @@
+; arguments required
+01 00 00 00
+
+; evaluation stack required
+10 00 00 00
+
+; memory required
+; bytes 0..8: num iterations left
+; bytes 8..16: current value
+; bytes 16..24: next value
+; bytes 24..32: num digits
+; bytes onwards: digit storage
+00 00 00 40
+
+; store our argument
+0F 00 ; load byte 0
+24 ; memory store long
+
+; store initial values for current & next
+0F 00 ; load byte 0
+0F 08 ; load byte 8
+24 ; memory store long
+0F 01 ; load byte 1
+0F 10 ; load byte 16
+24 ; memory store long
+
+; loop start - load num iterations left & check if greater than 0
+0F 00 ; load byte 0
+20 ; memory load long
+0E ; not
+17 1B ; conditional short jump
+
+; load values, add them, and move them around
+0F 10 ; load byte 16
+20 ; memory load long
+0F 08 ; load byte 8
+20 ; memory load long
+0F 10 ; load byte 16
+20 ; memory load long
+00 ; add
+0F 10 ; load byte 16
+24 ; memory store long
+0F 08 ; load byte 8
+24 ; memory store long
+
+; decrement the counter
+0F 00 ; load byte 0
+20 ; memory load long
+0F 01 ; load byte 1
+01 ; subtract
+0F 00 ; load byte 0
+24 ; memory store long
+
+; jump back to loop start
+16 DF ; jump
+
+; initialise num digits
+0F 00 ; load byte 0
+0F 18 ; load byte 24
+24 ; memory store long
+
+; extract a digit at a time & store into memory
+0F 08 ; load byte 8
+20 ; memory load long
+0F 0A ; load byte 10
+05 ; modulo
+0F 30 ; load byte '0'
+00 ; add
+0F 18 ; load byte 24
+20 ; memory load long
+0F 20 ; load byte 32
+00 ; add
+21 ; memory store byte
+0F 08 ; load byte 8
+20 ; memory load long
+0F 0A ; load byte 10
+03 ; divide
+0F 08 ; load byte 8
+24 ; memory store long
+0F 18 ; load byte 24
+20 ; memory load long
+0F 01 ; load byte 1
+00 ; add
+0F 18 ; load byte 24
+24 ; memory store long
+
+; jump back if there's more digits
+0F 08 ; load byte 8
+20 ; memory load long
+17 D9 ; conditional jump back to start of loop
+
+; print one digit at a time
+0F 18 ; load byte 24
+20 ; memory load long
+0F 1F ; load byte 31
+00 ; add
+1A ; memory load byte
+27 ; print character
+0F 18 ; load byte 24
+20 ; memory load long
+0F 01 ; load byte 1
+01 ; subtract
+0F 18 ; load byte 24
+24 ; memory store long
+
+; jump back if still more digits to print
+0F 18 ; load byte 24
+20 ; memory load long
+17 EA ; conditional jump back to start of loop
+
+; exit program
+0F 0A ; load byte 10
+27 ; print character
+0F 00 ; load byte 0
+26 ; exit
