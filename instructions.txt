@@ -10,7 +10,7 @@
 ; bytes 16..24: next value
 ; bytes 24..32: num digits
 ; bytes onwards: digit storage
-00 00 00 40
+00 01 00 00
 
 ; store our argument
 0F 00 ; load byte 0
